@@ -20,6 +20,13 @@ def soma():
         return str(int(a) + int(b))
     return "paramentros faltando"
 
+@app.route('/sub', methods=['GET'])
+def soma():
+    a = request.args.get("a")
+    b = request.args.get("b")
+    if (a is not None and b is not None):
+        return str(int(a) - int(b))
+    return "paramentros faltando"
 
 
 if __name__ == '__main__':
