@@ -9,8 +9,30 @@ def login():
     # age = request.args.get("age")
     #if (name is not None and age is not None):
     #     return "Hello, "+name+" World!, yor age is: "+age
-    return render_template("login.html")
+    return render_template("sign-in.html")
 
+
+@app.route('/dash', methods=['POST','GET'])
+def dash():
+    if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
+           # print(login,password)
+        if login == "mateus@ifce.edu.br" and password == "1234":
+           return render_template("dashboard.html")
+        else:
+            return render_template("sign-in.html")
+    else:
+        return render_template("dashboard.html")
+
+@app.route('/users', methods=['GET'])
+def users():
+    return render_template("listUsers.html")
+
+
+@app.route('/projects', methods=['GET'])
+def projects():
+    return render_template("listProjects.html")
 
 @app.route('/index', methods=['POST'])
 def index():
