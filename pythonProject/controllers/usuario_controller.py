@@ -1,5 +1,5 @@
 from main import app
-from flask import render_template, request
+from flask import render_template, request, jsonify
 from models.User import *
 from models.Conexao import *
 @app.route("/usuario/create")
@@ -54,3 +54,54 @@ def save_user():
     except Exception as e:
         print(e)
         return render_template("usuario/sign-up.html",msg="Já existe um usuário")
+
+
+#metodo de login usando aplicação monolitica
+@app.route('/login/do', methods=['POST'])
+def login_do():
+    # recuperando os dados do formulário,
+    email = request.form['email']
+    senha = request.form['senha']
+
+    #abrindo conexão com o banco de dados.
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+
+    #consultando no Banco de Dados se tem um usuário com aquele email.
+    userDB = db.query(User).filter(User.email==email).first()
+
+    # nao existe o usuário
+    if userDB is None:
+        return render_template("usuario/sign-in.html", msg="Usuário não existe")
+    else:
+        #usuário existe e eu vou verificar se a senha está valida.
+        if userDB.senha != senha:
+            return render_template("usuario/sign-in.html", msg="Senha inválida")
+        else:
+           return render_template("/dashboard.html")
+
+#usando aplicao restful
+@app.route('/login/do/restful', methods=['POST'])
+def login_do_restful():
+    #utilizando o try excpet para eliminar a possibilidade de háver uma exceção não tratada no codigo.
+    try:
+        #obtendo os dados do json do request.
+        data = request.get_json()
+        #verificando se todos os campos necessários estão vindo.
+        if not data or 'username' not in data or 'password' not in data:
+                return jsonify({"status": "error", "message": "Username e password são obrigatórios"}), 400
+        #recotando os dados do json e colocando nas váriaveis locais.
+        userName = data['username']
+        senha = data['password']
+        #abrindo bd
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        db = SessionLocal()
+        #consultando se o usuário exite.
+        userDB = db.query(User).filter(User.email == userName).first()
+       # verificando se a senha está valida e logando o usuário.
+        if (userDB and userDB.senha == senha):
+            return jsonify({"status": "success", "message": "Login bem-sucedido!"}), 200
+        else:
+            return jsonify({"status": "erro", "message": "Senha ou usuário errados!"}), 400
+    except Exception as e:
+        return jsonify({"status": "erro", "message": str(e)}), 400

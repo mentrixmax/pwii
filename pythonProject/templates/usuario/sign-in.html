@@ -75,14 +75,14 @@
                 </div>
               </div>
               <div class="card-body">
-                <form role="form" class="text-start" action="/dash" method="post">
+                <form role="form" class="text-start" action="/login/do" method="post">
                   <div class="input-group input-group-outline my-3">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-control" name="login">
+                    <input type="email" class="form-control" name="email">
                   </div>
                   <div class="input-group input-group-outline mb-3">
                     <label class="form-label">Senha</label>
-                    <input type="password" class="form-control" name="password">
+                    <input type="password" class="form-control" name="senha">
                   </div>
                   <div class="form-check form-switch d-flex align-items-center mb-3">
                     <input class="form-check-input" type="checkbox" id="rememberMe" checked>
@@ -95,6 +95,11 @@
                     Criar uma conta
                     <a href="/users/create" class="text-primary text-gradient font-weight-bold">Criar</a>
                   </p>
+
+                  <div style="font-size: 30pt; color: #0d6efd" >
+                     {{msg}}
+                    </div>
+
                 </form>
               </div>
             </div>
