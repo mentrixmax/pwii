@@ -1,7 +1,10 @@
+from sqlalchemy.sql.functions import user
+
 from main import app
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from models.User import *
 from models.Conexao import *
+from datetime import datetime
 @app.route("/usuario/create")
 def inserir():
     return "chegou na rota"
@@ -36,6 +39,7 @@ def users():
     db = SessionLocal()
     # pegar os usuarios do BD
     listaUsu = db.query(User).all()
+    db.close()
     #devolver pra view
     return render_template("usuario/listUsers.html",users=listaUsu)
 
@@ -112,3 +116,57 @@ def login_do_restful():
             return jsonify({"status": "erro", "message": "Senha ou usuário errados!"}), 400
     except Exception as e:
         return jsonify({"status": "erro", "message": str(e)}), 400
+
+@app.route('/users/delete/<user_id>', methods=['GET'])
+def delete_user(user_id):
+   # abre a conexao
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+   #filtra pelo id
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        return "Usuário nao encontrado", 404
+    db.delete(user)
+    db.commit()
+
+    listaUsu = db.query(User).all()
+    db.close()
+    # devolver pra view
+    return redirect(url_for('users'))
+
+@app.route('/users/pre-update/<user_id>', methods=['GET'])
+def pre_update_user(user_id):
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        return "Usuário nao encontrado", 404
+
+    return render_template("/usuario/update.html", user=user)
+
+@app.route('/users/update/', methods=['POST'])
+def update_user():
+   #obtendo os dados que o usuário digitou
+    user_id = int(request.form['user_id'])
+    username = request.form['nome']
+    userEmail = request.form['email']
+    userFuncao = request.form['funcao']
+    userData = request.form['data']
+    data_obj = datetime.strptime(userData, "%Y-%m-%d")
+
+#pegando dados do BD
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        return "Usuário nao encontrado", 404
+    #substituindo os dados
+    user.nome  = username
+    user.email = userEmail
+    user.funcao = userFuncao
+    user.dataContratacao = data_obj
+   # db.update(user)
+    db.commit()
+    db.close()
+
+    return redirect(url_for('users'))
