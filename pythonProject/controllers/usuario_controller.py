@@ -30,7 +30,14 @@ def dash():
 
 @app.route('/users', methods=['GET'])
 def users():
-    return render_template("usuario/listUsers.html")
+    # abrir a conexao
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False,
+                                bind=engine)
+    db = SessionLocal()
+    # pegar os usuarios do BD
+    listaUsu = db.query(User).all()
+    #devolver pra view
+    return render_template("usuario/listUsers.html",users=listaUsu)
 
 @app.route('/users/create', methods=['GET'])
 def create_users():
