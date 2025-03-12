@@ -1,4 +1,4 @@
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, Float
 from flask_login import UserMixin
 
 from models.Conexao import *
@@ -17,4 +17,30 @@ class User(Base, UserMixin):
         self.nome = nome
         self.email = email
         self.senha = bcrypt.hashpw(senha.encode('utf-8'),bcrypt.gensalt()).decode('utf-8')
+
+
+class Produto(Base):
+    __tablename__ = 'produtos'
+    id = Column(Integer, primary_key=True)
+    descricao = Column("descricao", String(100), nullable=False)
+    preco = Column("preco", Float, nullable=False)
+    estoque = Column("estoque", Float, nullable=False)
+    estoqueMinimo = Column("estoqueMinimo", Float, nullable=False)
+
+    def __init__(self, descricao, preco, estoque, estmin):
+        self.descricao = descricao
+        self.preco = preco
+        self.estoque = estoque
+        self.estoqueMinimo = estmin
+
+
+class TipoProduto(Base):
+    __tablename__ = 'tipo_produtos'
+    id = Column(Integer, primary_key=True)
+    descricao = Column("descricao", String(100), nullable=False)
+
+
+# Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+
 Base.metadata.create_all(bind=engine)

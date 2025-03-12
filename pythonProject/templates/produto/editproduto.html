@@ -1,0 +1,35 @@
+<html>
+    <body>
+        <div>
+            <h2>Editando {{produto.descricao}}</h2>
+
+            <form action="/produtos/save/{{produto.id}}" method="post">
+            <div>
+             Descrição do Produto <br/>  
+            <input type="text" name="descricao" value="{{produto.descricao}}" />
+            </div>
+
+            <div>
+                Preço <br/>  
+               <input type="number" name="preco" value="{{produto.preco}}" />
+               </div>
+
+               <div>
+                Estoque <br/>  
+               <input type="number" name="estoque" value="{{produto.estoque}}"  />
+               </div>
+
+               <div>
+                Estoque Mínimo <br/>  
+               <input type="number" name="estMin" value="{{produto.estoqueMinimo}}"
+               </div>
+
+               <br> 
+               <input type="submit" value="salvar"/>
+
+            </form>
+
+
+        </div>
+    </body>
+</html>
